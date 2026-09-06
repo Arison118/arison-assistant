@@ -2,7 +2,7 @@
 // ARISON ASSISTANT - MULTI-MODEL FALLBACK & RAISONNEMENT ÉTENDU 24/7
 // ==========================================================
 
-const GEMINI_API_KEY = "NY API KEY KELIKO"; // Apetraho eto ny API Key-nao
+const GEMINI_API_KEY = "AQ.Ab8RN6KNGVj0o20hzmkuy58zdB6WkM38x-gk6AG5yeEB8azqgQ"; // Apetraho eto ny API Key-nao
 
 // Ireo Model rehetra namboarina handimby toerana (Apetraka koa ny Raisonnement étendu)
 const GEMINI_MODELS = [
