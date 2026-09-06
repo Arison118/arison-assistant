@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="mg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ARISON - Application Web Pro</title>
+    
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
+      %22name%22: %22AI ARISON WEB%22,
+      %22short_name%22: %22Arison%22,
+      %22start_url%22: %22./index.html%22,
+      %22display%22: %22standalone%22,
+      %22background_color%22: %22%23f4f7f6%22,
+      %22theme_color%22: %22%231e3c72%22,
+      %22icons%22: [
+        {
+          %22src%22: %22https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=192&q=80%22,
+          %22sizes%22: %22192x192%22,
+          %22type%22: %22image/jpeg%22
+        }
+      ]
+    }">
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #222222;
+            --text-secondary: #555555;
+            --primary-color: #1e3c72;
+            --border-color: #d0dbe5;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #f0f0f0;
+            --text-secondary: #cccccc;
+            --primary-color: #4a90e2;
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 12px;
+            transition: background-color 0.3s, color 0.3s;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        #page1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 9999;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-subtitle {
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .hero-video-container {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+            background: #000;
+        }
+
+        .hero-video-container video {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .btn-ouvrir {
+            background: linear-gradient(45deg, #FF416C, #FF4B2B);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-ouvrir:active {
+            transform: scale(0.95);
+        }
+
+        .page-section {
+            display: none;
+        }
+
+        .active-section {
+            display: block !important;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .search-bar {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 25px;
+            border: 2px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            white-space: nowrap;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-img-large {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--primary-color);
+            margin: 10px auto 15px auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .bio-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 12px;
+        }
+        body.dark-mode .bio-title {
+            color: #4a90e2;
+        }
+
+        .bio-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            text-align: left;
+            background: var(--bg-color);
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .salutation-card {
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            text-align: left;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+
+        .sal-mg { background: rgba(46, 204, 113, 0.08); border-left: 6px solid #2ecc71; }
+        .sal-fr { background: rgba(52, 152, 219, 0.08); border-left: 6px solid #3498db; }
+        .sal-en { background: rgba(155, 89, 182, 0.08); border-left: 6px solid #9b59b6; }
+
+        .sal-title {
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .banner-box {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nav-btn.active-tab {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 18px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .price-tag {
+            color: #d9534f;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .qty-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .qty-input {
+            width: 65px;
+            padding: 8px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .payment-box {
+            background: var(--bg-color);
+            padding: 16px;
+            border-radius: 14px;
+            margin: 16px 0;
+            border: 2px dashed var(--primary-color);
+            text-align: left;
+        }
+
+        .payment-title {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .operator-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .op-mvola { background-color: #f1c40f; color: #333333; }
+        .op-orange { background-color: #ff6600; }
+        .op-airtel { background-color: #e74c3c; }
+
+        .op-details {
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .btn-buy {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 25px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-call {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 25px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+        }
+
+        .btn-share {
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 25px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);
+        }
+
+        .btn-main {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 28px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn-secondary {
+            background: #555555;
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 28px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+        .panier-badge {
+            background: #ff3b30;
+            color: white;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        #cartModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .cart-content {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: left;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+
+   <script>
+        // Registration Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                    self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+                    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+                `)).catch(err => console.log('SW registration failed: ', err));
+            });
+        }
+
+        let cart = [];
+
+        function showPage(pageId) {
+            var sections = document.getElementsByClassName('page-section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active-section');
+            }
+            document.getElementById('page1').style.display = 'none';
+
+            document.getElementById(pageId).classList.add('active-section');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            var btn = document.getElementById('themeBtn');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.innerText = "☀️ Clair";
+            } else {
+                btn.innerText = "🌙 Sombre";
+            }
+        }
+
+        function switchTab(tabId, btnElement) {
+            document.getElementById('tab1').style.display = 'none';
+            document.getElementById('tab2').style.display = 'none';
+            document.getElementById(tabId).style.display = 'block';
+            
+            var buttons = document.getElementsByClassName('nav-btn');
+            for(var i=0; i<buttons.length; i++) {
+                buttons[i].classList.remove('active-tab');
+            }
+            btnElement.classList.add('active-tab');
+        }
+
+        function addToCart(productName, price) {
+            var qtyInput = document.getElementById(productName + '-qty');
+            var qty = qtyInput ? parseInt(qtyInput.value) : 1;
+            
+            let found = cart.find(item => item.name === productName);
+            if (found) {
+                found.qty += qty;
+            } else {
+                cart.push({ name: productName, price: price, qty: qty });
+            }
+            updateCartBadge();
+            alert("✅ Tafiditra ao anaty Panier ny: " + productName + " (" + qty + ")");
+        }
+
+        function updateCartBadge() {
+            let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartCount').innerText = totalItems;
+        }
+
+        function openCartModal() {
+            let modal = document.getElementById('cartModal');
+            let listDiv = document.getElementById('cartItemsList');
+            let totalDiv = document.getElementById('cartTotalPrice');
+            
+            if (cart.length === 0) {
+                listDiv.innerHTML = "<p style='text-align:center; color:var(--text-secondary); font-size:15px;'>Mbola banga ny panier-nao.</p>";
+                totalDiv.innerHTML = "Totaly: 0 Ariary";
+            } else {
+                let html = "<ul style='padding-left: 20px; font-size: 15px;'>";
+                let total = 0;
+                cart.forEach((item, index) => {
+                    let sub = item.price * item.qty;
+                    total += sub;
+                    html += `<li style='margin-bottom: 10px;'><b>${item.name}</b><br>Isany: ${item.qty} x ${item.price.toLocaleString()} Ar = <b>${sub.toLocaleString()} Ar</b></li>`;
+                });
+                html += "</ul>";
+                listDiv.innerHTML = html;
+                totalDiv.innerHTML = "<b>Totaly Ankapobeny: " + total.toLocaleString() + " Ariary</b>";
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("Mbola tsy misy vokatra ao anaty panier!");
+                return;
+            }
+            let msg = "Salama Arison! Ity ny kômandy nataoko tao amin'ny Panier:\n";
+            let total = 0;
+            cart.forEach(item => {
+                let sub = item.price * item.qty;
+                total += sub;
+                msg += "- " + item.name + " (Isany: " + item.qty + ") : " + sub.toLocaleString() + " Ar\n";
+            });
+            msg += "\nTotaly ankapobeny: " + total.toLocaleString() + " Ariary. Misaotra tompoko!";
+            var url = "https://wa.me/261383374408?text=" + encodeURIComponent(msg);
+            window.open(url, '_blank');
+        }
+
+        function sendWhatsAppSingle(productName, price) {
+            var qtyInput = document.getElementById(productName + '-qty');
+            var qty = qtyInput ? qtyInput.value : 1;
+            var total = price * qty;
+            var msg = "Salama Arison! Te hividy na handray tolotra momba ny *" + productName + "* aho. Isany: " + qty + ". Totaly: " + total.toLocaleString() + " Ariary. Misaotra!";
+            var url = "https://wa.me/261383374408?text=" + encodeURIComponent(msg);
+            window.open(url, '_blank');
+        }
+
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AI ARISON WEB',
+                    text: 'Tsy maintsy jerena ity application web namboarin\'i Arison ity!',
+                    url: window.location.href,
+                }).catch(() => {});
+            } else {
+                alert("Nikaika ny rohy (Link)! Afaka zaraina amin'ny olona.");
+            }
+        }
+
+        function filterContent() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            if(query.includes('boutique') || query.includes('vidy') || query.includes('service')) {
+                showPage('page4');
+            } else if(query.includes('arison') || query.includes('mombamomba')) {
+                showPage('page2');
+            } else if(query.includes('salama') || query.includes('fiarahabana')) {
+                showPage('page3');
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="page1">
+        <h1 class="hero-title">🚀 AI ARISON WEB</h1>
+        <p class="hero-subtitle">Trano Fianarana Développement Site Web Matihanina</p>
+        
+        <div class="hero-video-container">
+            <video controls autoplay muted loop poster="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&q=80">
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <p style="color: #eee; font-size: 14px; max-width: 320px; margin-bottom: 25px; font-weight: 500;">
+            Fikarohana sy fampianarana nomerika avo lenta natao hanovana anao ho mpamorona matihanina.
+        </p>
+
+        <button type="button" class="btn-ouvrir" onclick="showPage('page2')">
+            Ouvrir ➔
+        </button>
+    </div>
+
+    <div class="main-container">
+
+        <div class="top-bar">
+            <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Tadiavo eto (Boutique, Arison...)" onkeyup="filterContent()">
+            <button type="button" class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Sombre</button>
+        </div>
+
+        <div id="page2" class="page-section">
+            <div class="card">
+                <h2 class="bio-title">👤 Mombamomba an'i Arison</h2>
+                
+                <img src="Madiobe.jpg" class="profile-img-large" alt="Arison">
+                
+                <h3 style="font-size: 20px; margin: 5px 0; font-weight: bold;">Arison Developer</h3>
+                <p style="color: var(--text-secondary); font-size: 15px; font-weight: bold; margin-bottom: 15px;">Mpianatra & Mpamorona Tranonkala / AI</p>
+
+                <div class="bio-desc">
+                    <strong style="color: var(--primary-color);">🎯 Ny Tanjona Nanorenana Azy Ity:</strong><br>
+                    Ny tanjona lehibe dia ny hanaporofoana fa afaka mamorona fampiharana web sy rindrankajy maoderina sady mahasoa amin'ny alalan'ny finday fotsiny eto Madagasikara, ary hanome fahalalana mora raisina sy azo antoka ho an'ny rehetra.
+                </div>
+
+                <div class="payment-box">
+                    <div class="payment-title">💳 Laharana Fandoavam-bola Mpanjifa</div>
+                    <div class="operator-item op-mvola">
+                        <span>🟡 M'vola</span>
+                        <span class="op-details">+261 38 33 744 08</span>
+                    </div>
+                    <div class="operator-item op-orange">
+                        <span>🟠 Orange Money</span>
+                        <span class="op-details">+261 32 39 235 75</span>
+                    </div>
+                    <div class="operator-item op-airtel">
+                        <span>🔴 Airtel Money</span>
+                        <span class="op-details">+261 33 20 567 26</span>
+                    </div>
+                </div>
+
+                <a href="tel:+261383374408" class="btn-call">📞 Antsoy Mivantana aho</a>
+                <button type="button" class="btn-buy" onclick="window.open('https://wa.me/261340000000?text=Salama%20Arison!%20Te%20hahafantatra%20be%20kely%20aho.', '_blank')">💬 WhatsApp</button>
+                <button type="button" class="btn-share" onclick="shareApp()">🔗 Partager ny Application</button>
+
+                <button type="button" class="btn-main" onclick="showPage('page3')">
+                    Salutation 👋 ➔
+                </button>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('page1').style.display='flex'; window.scrollTo({top:0});">
+                    ↺ Page 1
+                </button>
+            </div>
+        </div>
+
+        <div id="page3" class="page-section">
+            <div class="card">
+                <h2 class="bio-title">🌍 Fiarahabana & Firarian-tsoa</h2>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Fiarahabana manokana natao tamin'ny fiteny telo samihafa:</p>
+                
+                <div class="salutation-card sal-mg">
+                    <div class="sal-title" style="color: #27ae60;">🇲🇬 Malagasy</div>
+                    Miarahaba tompoko ! Tongasoa eto amin'ny sehatra misy ahy ianao izao! Mirary soa indrindra ho anao aho ahita fahombiazana amin'ny asa ataonao ato anie ianao, ary hahomby amin'ny fikarohana sy fiofanana, fianarana nomerika miampy fietsinanao ato amin'ny BOUTIQUE ARISON koa anie ianao, ary hitombo hatrany ny fahaiza-manaonao azonao tato!
+                </div>
+
+                <div class="salutation-card sal-fr">
+                    <div class="sal-title" style="color: #2980b9;">🇫🇷 Français</div>
+                    Bienvenue chaleureusement sur ma plateforme BOUTIQUE ARISON ! Je vous souhaite un immense succès dans vos projets, une excellente réussite dans vos apprentissages numériques et un épanouissement total !
+                </div>
+
+                <div class="salutation-card sal-en">
+                    <div class="sal-title" style="color: #8e44ad;">🇬🇧 English</div>
+                    Warmly welcome to my platform THE BOUTIQUE ARISON! Wishing you tremendous success in your endeavors, excellence in your digital learning journey, and continuous growth ahead!
+                </div>
+
+                <button type="button" class="btn-main" onclick="showPage('page4')">
+                    Arison Boutique 🛒 ➔
+                </button>
+                <button type="button" class="btn-secondary" onclick="showPage('page2')">
+                    ↺ Page 2
+                </button>
+            </div>
+        </div>
+
+        <div id="page4" class="page-section">
+            <div class="card">
+                <div class="banner-box">
+                    <div>
+                        <h2 style="margin: 0; font-size: 20px;">🛒 ARISON BOUTIQUE</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9;">Serivisy Web & Fitaovana Informatique</p>
+                    </div>
+                    <button type="button" class="cart-icon-btn" onclick="openCartModal()">
+                        🛒 Panier <span id="cartCount" class="panier-badge">0</span>
+                    </button>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" id="tab1Btn" class="nav-btn active-tab" onclick="switchTab('tab1', this)">🌐 1. Service</button>
+                    <button type="button" id="tab2Btn" class="nav-btn" onclick="switchTab('tab2', this)">💾 2. Clés & Informatique</button>
+                </div>
+
+                <div id="tab1" class="tab-content">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=80" class="product-img" alt="Site Web">
+                        <h3 style="color: var(--primary-color); font-size: 17px;">🌐 Création Site Web Vitrine</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Tranonkala maoderina mampiseho ny orinasanao na ny asanao manokana amin'ny Internet.</p>
+                        <div class="price-tag">200.000 Ariary</div>
+                        
+                        <div class="qty-container">
+                            <label>Isany:</label>
+                            <input type="number" id="Création Site Web Vitrine-qty" class="qty-input" value="1" min="1">
+                        </div>
+
+                        <button type="button" class="btn-buy" style="background-color: #3498db;" onclick="addToCart('Création Site Web Vitrine', 200000)">🛒 Ampiana ao amin'ny Panier</button>
+                        <button type="button" class="btn-buy" onclick="sendWhatsAppSingle('Création Site Web Vitrine', 200000)">💬 Kômandy WhatsApp</button>
+                    </div>
+
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=500&q=80" class="product-img" alt="Design CSS">
+                        <h3 style="color: var(--primary-color); font-size: 17px;">🎨 Design CSS & Haingo Maoderina</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Fametrahana endrika sy haingo miavaka, madio, sady mi-responsive tsara amin'ny finday rehetra.</p>
+                        <div class="price-tag">80.000 Ariary</div>
+                        
+                        <div class="qty-container">
+                            <label>Isany:</label>
+                            <input type="number" id="Design CSS & Haingo Maoderina-qty" class="qty-input" value="1" min="1">
+                        </div>
+
+                        <button type="button" class="btn-buy" style="background-color: #3498db;" onclick="addToCart('Design CSS & Haingo Maoderina', 80000)">🛒 Ampiana ao amin'ny Panier</button>
+                        <button type="button" class="btn-buy" onclick="sendWhatsAppSingle('Design CSS & Haingo Maoderina', 80000)">💬 Kômandy WhatsApp</button>
+                    </div>
+                </div>
+
+                <div id="tab2" class="tab-content" style="display: none;">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80" class="product-img" alt="Clé Bootable">
+                        <h3 style="color: var(--primary-color); font-size: 17px;">💾 Clé USB Windows & Office Bootable</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Clé 32GB vao feno Windows 10/11 + Pack Office complete vonona amin'ny installation.</p>
+                        <div class="price-tag">50.000 Ariary</div>
+                        
+                        <div class="qty-container">
+                            <label>Isany:</label>
+                            <input type="number" id="Clé USB Windows & Office Bootable-qty" class="qty-input" value="1" min="1">
+                        </div>
+
+                        <button type="button" class="btn-buy" style="background-color: #3498db;" onclick="addToCart('Clé USB Windows & Office Bootable', 50000)">🛒 Ampiana ao amin'ny Panier</button>
+                        <button type="button" class="btn-buy" onclick="sendWhatsAppSingle('Clé USB Windows & Office Bootable', 50000)">💬 Kômandy WhatsApp</button>
+                    </div>
+
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&q=80" class="product-img" alt="Clé Cours">
+                        <h3 style="color: var(--primary-color); font-size: 17px;">🔑 Clé USB Cours Programmation & AI</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Feno fianarana momba ny kaody, fananganana AI, ary fitaovana ilaina rehetra.</p>
+                        <div class="price-tag">45.000 Ariary</div>
+                        
+                        <div class="qty-container">
+                            <label>Isany:</label>
+                            <input type="number" id="Clé USB Cours Programmation & AI-qty" class="qty-input" value="1" min="1">
+                        </div>
+
+                        <button type="button" class="btn-buy" style="background-color: #3498db;" onclick="addToCart('Clé USB Cours Programmation & AI', 45000)">🛒 Ampiana ao amin'ny Panier</button>
+                        <button type="button" class="btn-buy" onclick="sendWhatsAppSingle('Clé USB Cours Programmation & AI', 45000)">💬 Kômandy WhatsApp</button>
+                    </div>
+                </div>
+
+                <div class="payment-box">
+                    <div class="payment-title">💳 Laharana Fandoavam-bola Mpanjifa</div>
+                    <div class="operator-item op-mvola">
+                        <span>🟡 Mvola</span>
+                        <span class="op-details">+261 38 33 744 08</span>
+                    </div>
+                    <div class="operator-item op-orange">
+                        <span>🟠 Orange Money</span>
+                        <span class="op-details">+261 32 39 235 75</span>
+                    </div>
+                    <div class="operator-item op-airtel">
+                        <span>🔴 Airtel Money</span>
+                        <span class="op-details">+261 33 20 567 26</span>
+                    </div>
+                </div>
+
+                <a href="tel:+261383374408" class="btn-call">📞 Antsoy Mivantana Aho</a>
+                <button type="button" class="btn-share" onclick="shareApp()">🔗 Partager ny Boutique</button>
+
+                <button type="button" class="btn-secondary" style="margin-top: 15px;" onclick="showPage('page3')">
+                    ↺ Page 2
+                </button>
+            </div>
+        </div>
+
+    </div>
+ <button onclick="openArisonAssistant()" style="width: 100%; margin: 10px 0; padding: 12px; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 20px; color: #000; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <i class="fa-solid fa-robot"></i> Miresaka amin'ny Arison Assistant
+ </button>
+    <div id="cartModal" onclick="if(event.target === this) closeCartModal();">
+        <div class="cart-content">
+            <h3 style="margin-top:0; color:var(--primary-color); font-size:20px;">🛒 Ny Panier-nao</h3>
+            <div id="cartItemsList"></div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;">
+            <div id="cartTotalPrice" style="font-size:16px; margin-bottom:15px; color:var(--text-color);"></div>
+            
+            <button type="button" class="btn-buy" onclick="checkoutWhatsApp()">💬 Alefaso amin'ny WhatsApp ny Kômandy</button>
+            <button type="button" class="btn-secondary" onclick="closeCartModal()">Hidio</button>
+        </div>
+    </div>
+
+  <script src="ai-assistant.js"></script>
+
+</body>
+</html>
